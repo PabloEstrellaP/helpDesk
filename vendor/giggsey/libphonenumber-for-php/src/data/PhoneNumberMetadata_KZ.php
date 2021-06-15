@@ -14,13 +14,16 @@
 return array (
   'generalDesc' => 
   array (
-    'NationalNumberPattern' => '(?:33622|(?:7\\d|80)\\d{3})\\d{5}',
+    'NationalNumberPattern' => '33622\\d{5}|(?:7\\d|80)\\d{8}',
     'PossibleLength' => 
     array (
       0 => 10,
     ),
     'PossibleLengthLocalOnly' => 
     array (
+      0 => 5,
+      1 => 6,
+      2 => 7,
     ),
   ),
   'fixedLine' => 
@@ -32,11 +35,14 @@ return array (
     ),
     'PossibleLengthLocalOnly' => 
     array (
+      0 => 5,
+      1 => 6,
+      2 => 7,
     ),
   ),
   'mobile' => 
   array (
-    'NationalNumberPattern' => '7(?:0[0-2578]|47|6[02-4]|7[15-8]|85)\\d{7}',
+    'NationalNumberPattern' => '7(?:0[0-25-8]|47|6[0-4]|7[15-8]|85)\\d{7}',
     'ExampleNumber' => '7710009998',
     'PossibleLength' => 
     array (

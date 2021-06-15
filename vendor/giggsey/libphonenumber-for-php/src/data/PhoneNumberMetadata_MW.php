@@ -37,7 +37,7 @@ return array (
   ),
   'mobile' => 
   array (
-    'NationalNumberPattern' => '(?:111|(?:77|88|99)\\d)\\d{6}',
+    'NationalNumberPattern' => '111\\d{6}|(?:31|77|88|99)\\d{7}',
     'ExampleNumber' => '991234567',
     'PossibleLength' => 
     array (
@@ -89,11 +89,9 @@ return array (
   ),
   'voip' => 
   array (
-    'NationalNumberPattern' => '31\\d{7}',
-    'ExampleNumber' => '310123456',
     'PossibleLength' => 
     array (
-      0 => 9,
+      0 => -1,
     ),
     'PossibleLengthLocalOnly' => 
     array (
@@ -177,19 +175,7 @@ return array (
       'format' => '$1 $2 $3 $4',
       'leadingDigitsPatterns' => 
       array (
-        0 => '[17-9]',
-      ),
-      'nationalPrefixFormattingRule' => '0$1',
-      'domesticCarrierCodeFormattingRule' => '',
-      'nationalPrefixOptionalWhenFormatting' => false,
-    ),
-    3 => 
-    array (
-      'pattern' => '(\\d{2})(\\d{3})(\\d{4})',
-      'format' => '$1 $2 $3',
-      'leadingDigitsPatterns' => 
-      array (
-        0 => '3',
+        0 => '[137-9]',
       ),
       'nationalPrefixFormattingRule' => '0$1',
       'domesticCarrierCodeFormattingRule' => '',

@@ -11,6 +11,11 @@
  */
 
 return array (
+  25410 => 'Airtel',
+  25411 => 'Safaricom',
+  254120 => 'Telkom',
+  254121 => 'Infura',
+  254124 => 'Finserve',
   25470 => 'Safaricom',
   25471 => 'Safaricom',
   25472 => 'Safaricom',
@@ -32,7 +37,7 @@ return array (
   254766 => 'Finserve',
   254767 => 'Sema Mobile',
   254768 => 'Safaricom',
-  254769 => 'Airtel',
+  254769 => 'Safaricom',
   25477 => 'Telkom',
   25478 => 'Airtel',
   25479 => 'Safaricom',

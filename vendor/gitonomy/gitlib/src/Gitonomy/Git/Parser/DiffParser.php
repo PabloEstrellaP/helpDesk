@@ -9,6 +9,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace Gitonomy\Git\Parser;
 
 use Gitonomy\Git\Diff\File;
@@ -20,7 +21,7 @@ class DiffParser extends ParserBase
 
     protected function doParse()
     {
-        $this->files = array();
+        $this->files = [];
 
         while (!$this->isFinished()) {
             // 1. title
@@ -96,23 +97,23 @@ class DiffParser extends ParserBase
             // 5. Diff
             while ($this->expects('@@ ')) {
                 $vars = $this->consumeRegexp('/-(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))?/');
-                $rangeOldStart = $vars[1];
-                $rangeOldCount = $vars[2];
-                $rangeNewStart = $vars[3];
-                $rangeNewCount = isset($vars[4]) ? $vars[4] : $vars[2]; // @todo Ici, t'as pris un gros raccourci mon loulou
+                $rangeOldStart = (int) $vars[1];
+                $rangeOldCount = (int) $vars[2];
+                $rangeNewStart = (int) $vars[3];
+                $rangeNewCount = isset($vars[4]) ? (int) $vars[4] : (int) $vars[2]; // @todo Ici, t'as pris un gros raccourci mon loulou
                 $this->consume(' @@');
                 $this->consumeTo("\n");
                 $this->consumeNewLine();
 
                 // 6. Lines
-                $lines = array();
+                $lines = [];
                 while (true) {
                     if ($this->expects(' ')) {
-                        $lines[] = array(FileChange::LINE_CONTEXT, $this->consumeTo("\n"));
+                        $lines[] = [FileChange::LINE_CONTEXT, $this->consumeTo("\n")];
                     } elseif ($this->expects('+')) {
-                        $lines[] = array(FileChange::LINE_ADD, $this->consumeTo("\n"));
+                        $lines[] = [FileChange::LINE_ADD, $this->consumeTo("\n")];
                     } elseif ($this->expects('-')) {
-                        $lines[] = array(FileChange::LINE_REMOVE, $this->consumeTo("\n"));
+                        $lines[] = [FileChange::LINE_REMOVE, $this->consumeTo("\n")];
                     } elseif ($this->expects("\ No newline at end of file")) {
                         // Ignore this case...
                     } else {

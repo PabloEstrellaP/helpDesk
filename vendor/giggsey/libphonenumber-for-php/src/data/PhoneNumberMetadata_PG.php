@@ -26,10 +26,11 @@ return array (
   ),
   'fixedLine' => 
   array (
-    'NationalNumberPattern' => '(?:(?:3[0-2]|4[257]|5[34]|9[78])\\d|64[1-9]|77(?:[0-24]\\d|30)|85[02-46-9])\\d{4}',
+    'NationalNumberPattern' => '(?:(?:3[0-2]|4[257]|5[34]|9[78])\\d|64[1-9]|85[02-46-9])\\d{4}',
     'ExampleNumber' => '3123456',
     'PossibleLength' => 
     array (
+      0 => 7,
     ),
     'PossibleLengthLocalOnly' => 
     array (
@@ -37,7 +38,7 @@ return array (
   ),
   'mobile' => 
   array (
-    'NationalNumberPattern' => '(?:7(?:[0-689]\\d|75)|81\\d)\\d{5}',
+    'NationalNumberPattern' => '(?:7\\d|8[18])\\d{6}',
     'ExampleNumber' => '70123456',
     'PossibleLength' => 
     array (
@@ -103,9 +104,11 @@ return array (
   ),
   'pager' => 
   array (
+    'NationalNumberPattern' => '27[01]\\d{4}',
+    'ExampleNumber' => '2700123',
     'PossibleLength' => 
     array (
-      0 => -1,
+      0 => 7,
     ),
     'PossibleLengthLocalOnly' => 
     array (

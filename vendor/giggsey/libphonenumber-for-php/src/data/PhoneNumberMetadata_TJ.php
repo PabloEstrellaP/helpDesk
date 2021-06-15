@@ -14,7 +14,7 @@
 return array (
   'generalDesc' => 
   array (
-    'NationalNumberPattern' => '(?:[3-59]\\d|77|88)\\d{7}',
+    'NationalNumberPattern' => '(?:00|11|[2-57-9]\\d)\\d{7}',
     'PossibleLength' => 
     array (
       0 => 9,
@@ -44,7 +44,7 @@ return array (
   ),
   'mobile' => 
   array (
-    'NationalNumberPattern' => '(?:41[18]|(?:5[05]|77|88|9[0-35-9])\\d)\\d{6}',
+    'NationalNumberPattern' => '41[18]\\d{6}|(?:[034]0|11|2[02]|5[05]|7[07]|8[08]|9\\d)\\d{7}',
     'ExampleNumber' => '917123456',
     'PossibleLength' => 
     array (
@@ -154,12 +154,12 @@ return array (
   array (
     0 => 
     array (
-      'pattern' => '(\\d{4})(\\d)(\\d{4})',
+      'pattern' => '(\\d{6})(\\d)(\\d{2})',
       'format' => '$1 $2 $3',
       'leadingDigitsPatterns' => 
       array (
-        0 => '3(?:[1245]|3[12])',
-        1 => '3(?:[1245]|3(?:1[0-689]|2))',
+        0 => '331',
+        1 => '3317',
       ),
       'nationalPrefixFormattingRule' => '',
       'domesticCarrierCodeFormattingRule' => '',
@@ -167,11 +167,11 @@ return array (
     ),
     1 => 
     array (
-      'pattern' => '(\\d{6})(\\d)(\\d{2})',
+      'pattern' => '(\\d{3})(\\d{2})(\\d{4})',
       'format' => '$1 $2 $3',
       'leadingDigitsPatterns' => 
       array (
-        0 => '33',
+        0 => '[34]7|91[78]',
       ),
       'nationalPrefixFormattingRule' => '',
       'domesticCarrierCodeFormattingRule' => '',
@@ -179,11 +179,11 @@ return array (
     ),
     2 => 
     array (
-      'pattern' => '(\\d{2})(\\d{3})(\\d{4})',
+      'pattern' => '(\\d{4})(\\d)(\\d{4})',
       'format' => '$1 $2 $3',
       'leadingDigitsPatterns' => 
       array (
-        0 => '4[148]|[578]|9(?:[0235-9]|1[0-69])',
+        0 => '3[1-5]',
       ),
       'nationalPrefixFormattingRule' => '',
       'domesticCarrierCodeFormattingRule' => '',
@@ -191,11 +191,11 @@ return array (
     ),
     3 => 
     array (
-      'pattern' => '(\\d{3})(\\d{2})(\\d{4})',
+      'pattern' => '(\\d{2})(\\d{3})(\\d{4})',
       'format' => '$1 $2 $3',
       'leadingDigitsPatterns' => 
       array (
-        0 => '[349]',
+        0 => '[02-57-9]|11',
       ),
       'nationalPrefixFormattingRule' => '',
       'domesticCarrierCodeFormattingRule' => '',

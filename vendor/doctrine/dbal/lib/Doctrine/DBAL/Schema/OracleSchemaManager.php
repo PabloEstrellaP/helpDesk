@@ -3,19 +3,23 @@
 namespace Doctrine\DBAL\Schema;
 
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Driver\DriverException;
+use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Types\Type;
-use const CASE_LOWER;
+use Throwable;
+
 use function array_change_key_case;
 use function array_values;
 use function assert;
 use function preg_match;
 use function sprintf;
+use function str_replace;
 use function strpos;
 use function strtolower;
 use function strtoupper;
 use function trim;
+
+use const CASE_LOWER;
 
 /**
  * Oracle Schema Manager.
@@ -31,8 +35,9 @@ class OracleSchemaManager extends AbstractSchemaManager
             parent::dropDatabase($database);
         } catch (DBALException $exception) {
             $exception = $exception->getPrevious();
+            assert($exception instanceof Throwable);
 
-            if (! $exception instanceof DriverException) {
+            if (! $exception instanceof Exception) {
                 throw $exception;
             }
 
@@ -104,6 +109,7 @@ class OracleSchemaManager extends AbstractSchemaManager
                 $buffer['primary']    = false;
                 $buffer['non_unique'] = ! $tableIndex['is_unique'];
             }
+
             $buffer['key_name']    = $keyName;
             $buffer['column_name'] = $this->getQuotedIdentifierName($tableIndex['column_name']);
             $indexBuffer[]         = $buffer;
@@ -128,7 +134,7 @@ class OracleSchemaManager extends AbstractSchemaManager
             }
         }
 
-        $unsigned = $fixed = null;
+        $unsigned = $fixed = $precision = $scale = $length = null;
 
         if (! isset($tableColumn['column_name'])) {
             $tableColumn['column_name'] = '';
@@ -142,12 +148,19 @@ class OracleSchemaManager extends AbstractSchemaManager
         }
 
         if ($tableColumn['data_default'] !== null) {
-            // Default values returned from database are enclosed in single quotes.
-            $tableColumn['data_default'] = trim($tableColumn['data_default'], "'");
+            // Default values returned from database are represented as literal expressions
+            if (preg_match('/^\'(.*)\'$/s', $tableColumn['data_default'], $matches)) {
+                $tableColumn['data_default'] = str_replace("''", "'", $matches[1]);
+            }
         }
 
-        $precision = null;
-        $scale     = null;
+        if ($tableColumn['data_precision'] !== null) {
+            $precision = (int) $tableColumn['data_precision'];
+        }
+
+        if ($tableColumn['data_scale'] !== null) {
+            $scale = (int) $tableColumn['data_scale'];
+        }
 
         $type                    = $this->_platform->getDoctrineTypeMapping($dbType);
         $type                    = $this->extractDoctrineTypeFromComment($tableColumn['comments'], $type);
@@ -155,69 +168,34 @@ class OracleSchemaManager extends AbstractSchemaManager
 
         switch ($dbType) {
             case 'number':
-                if ($tableColumn['data_precision'] === 20 && $tableColumn['data_scale'] === 0) {
-                    $precision = 20;
-                    $scale     = 0;
-                    $type      = 'bigint';
-                } elseif ($tableColumn['data_precision'] === 5 && $tableColumn['data_scale'] === 0) {
-                    $type      = 'smallint';
-                    $precision = 5;
-                    $scale     = 0;
-                } elseif ($tableColumn['data_precision'] === 1 && $tableColumn['data_scale'] === 0) {
-                    $precision = 1;
-                    $scale     = 0;
-                    $type      = 'boolean';
-                } elseif ($tableColumn['data_scale'] > 0) {
-                    $precision = $tableColumn['data_precision'];
-                    $scale     = $tableColumn['data_scale'];
-                    $type      = 'decimal';
+                if ($precision === 20 && $scale === 0) {
+                    $type = 'bigint';
+                } elseif ($precision === 5 && $scale === 0) {
+                    $type = 'smallint';
+                } elseif ($precision === 1 && $scale === 0) {
+                    $type = 'boolean';
+                } elseif ($scale > 0) {
+                    $type = 'decimal';
                 }
-                $length = null;
+
                 break;
-            case 'pls_integer':
-            case 'binary_integer':
-                $length = null;
-                break;
+
             case 'varchar':
             case 'varchar2':
             case 'nvarchar2':
                 $length = $tableColumn['char_length'];
                 $fixed  = false;
                 break;
+
             case 'char':
             case 'nchar':
                 $length = $tableColumn['char_length'];
                 $fixed  = true;
                 break;
-            case 'date':
-            case 'timestamp':
-                $length = null;
-                break;
-            case 'float':
-            case 'binary_float':
-            case 'binary_double':
-                $precision = $tableColumn['data_precision'];
-                $scale     = $tableColumn['data_scale'];
-                $length    = null;
-                break;
-            case 'clob':
-            case 'nclob':
-                $length = null;
-                break;
-            case 'blob':
-            case 'raw':
-            case 'long raw':
-            case 'bfile':
-                $length = null;
-                break;
-            case 'rowid':
-            case 'urowid':
-            default:
-                $length = null;
         }
 
         $options = [
-            'notnull'    => (bool) ($tableColumn['nullable'] === 'N'),
+            'notnull'    => $tableColumn['nullable'] === 'N',
             'fixed'      => (bool) $fixed,
             'unsigned'   => (bool) $unsigned,
             'default'    => $tableColumn['data_default'],
@@ -291,6 +269,8 @@ class OracleSchemaManager extends AbstractSchemaManager
 
     /**
      * {@inheritdoc}
+     *
+     * @deprecated
      */
     protected function _getPortableFunctionDefinition($function)
     {
@@ -311,6 +291,10 @@ class OracleSchemaManager extends AbstractSchemaManager
 
     /**
      * {@inheritdoc}
+     *
+     * @param string|null $database
+     *
+     * Calling this method without an argument or by passing NULL is deprecated.
      */
     public function createDatabase($database = null)
     {
@@ -318,15 +302,18 @@ class OracleSchemaManager extends AbstractSchemaManager
             $database = $this->_conn->getDatabase();
         }
 
-        $params   = $this->_conn->getParams();
-        $username = $database;
-        $password = $params['password'];
+        $statement = 'CREATE USER ' . $database;
 
-        $query = 'CREATE USER ' . $username . ' IDENTIFIED BY ' . $password;
-        $this->_conn->executeUpdate($query);
+        $params = $this->_conn->getParams();
 
-        $query = 'GRANT DBA TO ' . $username;
-        $this->_conn->executeUpdate($query);
+        if (isset($params['password'])) {
+            $statement .= ' IDENTIFIED BY ' . $params['password'];
+        }
+
+        $this->_conn->executeStatement($statement);
+
+        $statement = 'GRANT DBA TO ' . $database;
+        $this->_conn->executeStatement($statement);
     }
 
     /**
@@ -340,7 +327,7 @@ class OracleSchemaManager extends AbstractSchemaManager
 
         $sql = $this->_platform->getDropAutoincrementSql($table);
         foreach ($sql as $query) {
-            $this->_conn->executeUpdate($query);
+            $this->_conn->executeStatement($query);
         }
 
         return true;
@@ -398,7 +385,7 @@ WHERE
     AND p.addr(+) = s.paddr
 SQL;
 
-        $activeUserSessions = $this->_conn->fetchAll($sql, [strtoupper($user)]);
+        $activeUserSessions = $this->_conn->fetchAllAssociative($sql, [strtoupper($user)]);
 
         foreach ($activeUserSessions as $activeUserSession) {
             $activeUserSession = array_change_key_case($activeUserSession, CASE_LOWER);
@@ -411,5 +398,25 @@ SQL;
                 )
             );
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function listTableDetails($name): Table
+    {
+        $table = parent::listTableDetails($name);
+
+        $platform = $this->_platform;
+        assert($platform instanceof OraclePlatform);
+        $sql = $platform->getListTableCommentsSQL($name);
+
+        $tableOptions = $this->_conn->fetchAssociative($sql);
+
+        if ($tableOptions !== false) {
+            $table->addOption('comment', $tableOptions['COMMENTS']);
+        }
+
+        return $table;
     }
 }
