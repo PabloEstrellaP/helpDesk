@@ -1,22 +1,22 @@
 <?php return array(
     'root' => array(
-        'pretty_version' => 'dev-master',
-        'version' => 'dev-master',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '4752081caff32ce8c378fd97ba5525aabd94c8f7',
+        'reference' => '995776ac99bf6deda9d4ab2e0bd8c8a476c1722b',
         'name' => 'laravel/laravel',
         'dev' => true,
     ),
     'versions' => array(
         'aws/aws-sdk-php' => array(
-            'pretty_version' => '3.184.3',
-            'version' => '3.184.3.0',
+            'pretty_version' => '3.184.6',
+            'version' => '3.184.6.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../aws/aws-sdk-php',
             'aliases' => array(),
-            'reference' => '2e1e8544258ea1a8f6c6ccaf651c8b5830a03a03',
+            'reference' => '0b7187c96ced465d400ad9427157e05ddee68edc',
             'dev_requirement' => false,
         ),
         'barryvdh/laravel-debugbar' => array(
@@ -689,12 +689,12 @@
             'dev_requirement' => false,
         ),
         'laravel/laravel' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '4752081caff32ce8c378fd97ba5525aabd94c8f7',
+            'reference' => '995776ac99bf6deda9d4ab2e0bd8c8a476c1722b',
             'dev_requirement' => false,
         ),
         'laravel/socialite' => array(
@@ -806,12 +806,12 @@
             'dev_requirement' => false,
         ),
         'mtdowling/jmespath.php' => array(
-            'pretty_version' => '2.6.0',
-            'version' => '2.6.0.0',
+            'pretty_version' => '2.6.1',
+            'version' => '2.6.1.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../mtdowling/jmespath.php',
             'aliases' => array(),
-            'reference' => '42dae2cbd13154083ca6d70099692fef8ca84bfb',
+            'reference' => '9b87907a81b87bc76d19a7fb2d61e61486ee9edb',
             'dev_requirement' => false,
         ),
         'myclabs/deep-copy' => array(
@@ -1373,12 +1373,12 @@
             'dev_requirement' => false,
         ),
         'symfony/mime' => array(
-            'pretty_version' => 'v5.3.0',
-            'version' => '5.3.0.0',
+            'pretty_version' => 'v5.3.2',
+            'version' => '5.3.2.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/mime',
             'aliases' => array(),
-            'reference' => 'ed710d297b181f6a7194d8172c9c2423d58e4852',
+            'reference' => '47dd7912152b82d0d4c8d9040dbc93d6232d472a',
             'dev_requirement' => false,
         ),
         'symfony/options-resolver' => array(
